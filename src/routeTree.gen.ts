@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SkinFinderRouteImport } from './routes/skin-finder'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SkinFinderRoute = SkinFinderRouteImport.update({
   id: '/skin-finder',
   path: '/skin-finder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,27 +31,31 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
   '/skin-finder': typeof SkinFinderRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
   '/skin-finder': typeof SkinFinderRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
   '/skin-finder': typeof SkinFinderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/skin-finder'
+  fullPaths: '/' | '/cart' | '/skin-finder'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/skin-finder'
-  id: '__root__' | '/' | '/skin-finder'
+  to: '/' | '/cart' | '/skin-finder'
+  id: '__root__' | '/' | '/cart' | '/skin-finder'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CartRoute: typeof CartRoute
   SkinFinderRoute: typeof SkinFinderRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/skin-finder'
       fullPath: '/skin-finder'
       preLoaderRoute: typeof SkinFinderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,8 +87,19 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CartRoute: CartRoute,
   SkinFinderRoute: SkinFinderRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
