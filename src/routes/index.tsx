@@ -3,6 +3,8 @@ import { ArrowRight, Sparkles, Leaf, ShieldCheck } from "lucide-react";
 import heroImg from "@/assets/skincare-hero.jpg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SkinFinder } from "@/components/SkinFinder";
+import { ProductCard } from "@/components/ProductCard";
+import { products } from "@/data/products";
 
 export const Route = createFileRoute("/")({
   head: () => ({
