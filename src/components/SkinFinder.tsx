@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Sparkles, Check, ArrowRight } from "lucide-react";
 import {
   type SkinType,
@@ -41,10 +41,36 @@ interface Props {
   compact?: boolean;
 }
 
+const STORAGE_KEY = "lumiere_skinfinder_v1";
+
 export function SkinFinder({ compact = false }: Props) {
   const [skinType, setSkinType] = useState<SkinType | null>(null);
   const [selectedConcerns, setSelectedConcerns] = useState<Concern[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data.skinType) setSkinType(data.skinType);
+        if (Array.isArray(data.concerns)) setSelectedConcerns(data.concerns);
+        if (data.showResults) setShowResults(true);
+      }
+    } catch {}
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ skinType, concerns: selectedConcerns, showResults }),
+      );
+    } catch {}
+  }, [skinType, selectedConcerns, showResults, hydrated]);
 
   const toggleConcern = (c: Concern) => {
     setSelectedConcerns((prev) =>
@@ -61,6 +87,7 @@ export function SkinFinder({ compact = false }: Props) {
     setSkinType(null);
     setSelectedConcerns([]);
     setShowResults(false);
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
   };
 
   return (

@@ -3,6 +3,8 @@ import { ArrowRight, Sparkles, Leaf, ShieldCheck } from "lucide-react";
 import heroImg from "@/assets/skincare-hero.jpg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SkinFinder } from "@/components/SkinFinder";
+import { ProductCard } from "@/components/ProductCard";
+import { products } from "@/data/products";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -53,12 +55,13 @@ function Index() {
                 Take the Skin Finder
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <a
-                href="#shop"
+              <Link
+                to="/"
+                hash="shop"
                 className="inline-flex items-center rounded-full border border-border bg-background/50 px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
               >
                 Shop the edit
-              </a>
+              </Link>
             </div>
 
             <div className="mt-12 flex gap-8 text-xs text-muted-foreground">
@@ -84,9 +87,26 @@ function Index() {
         </div>
       </section>
 
+      {/* Shop section */}
+      <section id="shop" className="scroll-mt-20 bg-background py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">The edit</p>
+            <h2 className="mt-2 font-serif text-4xl text-foreground md:text-5xl">
+              Shop our skincare
+            </h2>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {products.map((p, i) => (
+              <ProductCard key={p.id} product={p} index={i} showMatch={false} />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Skin Finder section */}
-      <section id="finder" className="bg-background py-20">
-        <div className="mx-auto max-w-3xl px-6 text-center animate-fade-up">
+      <section id="finder" className="scroll-mt-20 bg-gradient-soft py-20">
+        <div className="mx-auto max-w-3xl px-4 text-center animate-fade-up sm:px-6">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs uppercase tracking-wider text-muted-foreground">
             <Sparkles className="h-3 w-3" />
             Skin Type Product Finder
