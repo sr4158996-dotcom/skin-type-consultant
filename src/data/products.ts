@@ -167,6 +167,7 @@ export const products: Product[] = [
 export interface ScoredProduct {
   product: Product;
   score: number;
+  matchPercent: number;
   reason: string;
 }
 
@@ -180,6 +181,13 @@ export function recommendProducts(
       const matchedConcerns = product.concerns.filter((c) => concerns.includes(c));
       const score =
         (matchesSkin ? 3 : 0) + matchedConcerns.length * 2;
+      // Max possible: 3 (skin match) + 2 * concerns selected (capped by product concerns)
+      const maxPossible = 3 + Math.min(concerns.length, product.concerns.length) * 2;
+      const baseMatch = maxPossible > 0 ? score / maxPossible : 0;
+      // Blend with skin match weighting so even no-concerns gives a meaningful %
+      const matchPercent = Math.round(
+        Math.min(100, (matchesSkin ? 60 : 20) + matchedConcerns.length * 15 + baseMatch * 10),
+      );
 
       const concernText =
         matchedConcerns.length > 0
