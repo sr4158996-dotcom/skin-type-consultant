@@ -55,12 +55,13 @@ function Index() {
                 Take the Skin Finder
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <a
-                href="#shop"
+              <Link
+                to="/"
+                hash="shop"
                 className="inline-flex items-center rounded-full border border-border bg-background/50 px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-secondary"
               >
                 Shop the edit
-              </a>
+              </Link>
             </div>
 
             <div className="mt-12 flex gap-8 text-xs text-muted-foreground">
