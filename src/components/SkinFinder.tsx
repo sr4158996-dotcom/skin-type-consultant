@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Sparkles, Check, ArrowRight } from "lucide-react";
 import {
   type SkinType,
