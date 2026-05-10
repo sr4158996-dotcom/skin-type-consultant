@@ -205,7 +205,7 @@ export function recommendProducts(
         reason = `A well-loved essential that complements most routines.`;
       }
 
-      return { product, score, reason };
+      return { product, score, matchPercent, reason };
     })
     .filter((p) => p.score > 0)
     .sort((a, b) => b.score - a.score);
