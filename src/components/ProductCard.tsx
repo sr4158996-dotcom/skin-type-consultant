@@ -1,21 +1,44 @@
-import { Star, ShoppingBag, Sparkles } from "lucide-react";
-import type { ScoredProduct } from "@/data/products";
+import { useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { Star, ShoppingBag, Sparkles, Check } from "lucide-react";
+import type { ScoredProduct, Product } from "@/data/products";
 import { skinTypeLabels } from "@/data/products";
+import { useCart } from "@/lib/cart";
 
 interface Props {
-  scored: ScoredProduct;
+  scored?: ScoredProduct;
+  product?: Product;
   index?: number;
+  showMatch?: boolean;
 }
 
-export function ProductCard({ scored, index = 0 }: Props) {
-  const { product, reason } = scored;
+export function ProductCard({ scored, product: productProp, index = 0, showMatch = true }: Props) {
+  const product = scored?.product ?? productProp;
+  if (!product) return null;
+  const reason = scored?.reason;
+  const matchPercent = scored?.matchPercent;
+
+  const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product.id, 1);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
 
   return (
     <article
       className="group flex flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-card transition-all duration-500 hover:-translate-y-1 hover:shadow-soft animate-fade-up"
       style={{ animationDelay: `${index * 60}ms` }}
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
+      <Link
+        to="/products/$productId"
+        params={{ productId: product.id }}
+        className="relative block aspect-[4/5] overflow-hidden bg-secondary"
+      >
         <img
           src={product.image}
           alt={product.name}
@@ -25,9 +48,14 @@ export function ProductCard({ scored, index = 0 }: Props) {
         <div className="absolute left-4 top-4 rounded-full bg-background/90 px-3 py-1 text-[10px] font-medium uppercase tracking-wider text-foreground backdrop-blur">
           {product.category}
         </div>
-      </div>
+        {showMatch && typeof matchPercent === "number" && (
+          <div className="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-primary-foreground shadow-soft">
+            {matchPercent}% match
+          </div>
+        )}
+      </Link>
 
-      <div className="flex flex-1 flex-col gap-4 p-6">
+      <div className="flex flex-1 flex-col gap-4 p-5 sm:p-6">
         <div className="flex flex-wrap gap-1.5">
           {product.skinTypes.map((s) => (
             <span
@@ -40,7 +68,13 @@ export function ProductCard({ scored, index = 0 }: Props) {
         </div>
 
         <div>
-          <h3 className="font-serif text-xl leading-tight text-foreground">{product.name}</h3>
+          <Link
+            to="/products/$productId"
+            params={{ productId: product.id }}
+            className="font-serif text-xl leading-tight text-foreground hover:underline"
+          >
+            {product.name}
+          </Link>
           <p className="mt-1 text-sm text-muted-foreground">{product.keyBenefit}</p>
         </div>
 
@@ -50,13 +84,15 @@ export function ProductCard({ scored, index = 0 }: Props) {
           <span className="text-muted-foreground">({product.reviews.toLocaleString()})</span>
         </div>
 
-        <div className="rounded-xl bg-gradient-bloom p-4">
-          <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-primary">
-            <Sparkles className="h-3 w-3" />
-            Why this suits you
+        {reason && (
+          <div className="rounded-xl bg-gradient-bloom p-4">
+            <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-primary">
+              <Sparkles className="h-3 w-3" />
+              Why this suits your skin
+            </div>
+            <p className="text-xs leading-relaxed text-foreground/80">{reason}</p>
           </div>
-          <p className="text-xs leading-relaxed text-foreground/80">{reason}</p>
-        </div>
+        )}
 
         <div className="space-y-2 text-xs text-muted-foreground">
           <div>
@@ -65,15 +101,29 @@ export function ProductCard({ scored, index = 0 }: Props) {
           </div>
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-3 pt-2">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-2">
           <span className="font-serif text-2xl text-foreground">${product.price}</span>
           <div className="flex gap-2">
-            <button className="rounded-full border border-border px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-secondary">
+            <Link
+              to="/products/$productId"
+              params={{ productId: product.id }}
+              className="rounded-full border border-border px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
+            >
               View
-            </button>
-            <button className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90">
-              <ShoppingBag className="h-3.5 w-3.5" />
-              Add
+            </Link>
+            <button
+              onClick={handleAdd}
+              className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              {added ? (
+                <>
+                  <Check className="h-3.5 w-3.5" /> Added
+                </>
+              ) : (
+                <>
+                  <ShoppingBag className="h-3.5 w-3.5" /> Add
+                </>
+              )}
             </button>
           </div>
         </div>
