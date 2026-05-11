@@ -1,24 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sparkles, Check, ArrowRight } from "lucide-react";
-import {
-  type SkinType,
-  type Concern,
-  skinTypeLabels,
-  concernLabels,
-  recommendProducts,
-} from "@/data/products";
+import { skinTypeLabels, concernLabels, recommendProducts } from "@/data/products";
 import { ProductCard } from "./ProductCard";
 
-const skinTypes: SkinType[] = [
-  "oily",
-  "dry",
-  "acne-prone",
-  "sensitive",
-  "combination",
-  "normal",
-];
+const skinTypes = ["oily", "dry", "acne-prone", "sensitive", "combination", "normal"];
 
-const skinDescriptions: Record<SkinType, string> = {
+const skinDescriptions = {
   oily: "Shine throughout the day, visible pores",
   dry: "Tightness, flakiness, lack of moisture",
   "acne-prone": "Frequent breakouts, congestion",
@@ -27,7 +14,7 @@ const skinDescriptions: Record<SkinType, string> = {
   normal: "Balanced, comfortable, low concerns",
 };
 
-const concerns: Concern[] = [
+const concerns = [
   "acne",
   "dark-spots",
   "dullness",
@@ -37,15 +24,11 @@ const concerns: Concern[] = [
   "sensitive-skin",
 ];
 
-interface Props {
-  compact?: boolean;
-}
-
 const STORAGE_KEY = "lumiere_skinfinder_v1";
 
-export function SkinFinder({ compact = false }: Props) {
-  const [skinType, setSkinType] = useState<SkinType | null>(null);
-  const [selectedConcerns, setSelectedConcerns] = useState<Concern[]>([]);
+export function SkinFinder({ compact = false }) {
+  const [skinType, setSkinType] = useState(null);
+  const [selectedConcerns, setSelectedConcerns] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
@@ -72,7 +55,7 @@ export function SkinFinder({ compact = false }: Props) {
     } catch {}
   }, [skinType, selectedConcerns, showResults, hydrated]);
 
-  const toggleConcern = (c: Concern) => {
+  const toggleConcern = (c) => {
     setSelectedConcerns((prev) =>
       prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
     );
@@ -109,7 +92,6 @@ export function SkinFinder({ compact = false }: Props) {
           </div>
         )}
 
-        {/* Step 1 */}
         <div className="rounded-3xl border border-border/70 bg-card p-8 shadow-card md:p-12">
           <div className="mb-8 flex items-center gap-3">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
@@ -143,7 +125,6 @@ export function SkinFinder({ compact = false }: Props) {
             })}
           </div>
 
-          {/* Step 2 */}
           <div className={`mt-12 transition-opacity duration-500 ${skinType ? "opacity-100" : "pointer-events-none opacity-40"}`}>
             <div className="mb-6 flex items-center gap-3">
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
@@ -201,7 +182,6 @@ export function SkinFinder({ compact = false }: Props) {
           </div>
         </div>
 
-        {/* Results */}
         {showResults && skinType && (
           <div className="mt-16 animate-fade-in">
             <div className="mb-10 text-center">

@@ -1,36 +1,4 @@
-export type SkinType =
-  | "oily"
-  | "dry"
-  | "acne-prone"
-  | "sensitive"
-  | "combination"
-  | "normal";
-
-export type Concern =
-  | "acne"
-  | "dark-spots"
-  | "dullness"
-  | "dryness"
-  | "oil-control"
-  | "sun-protection"
-  | "sensitive-skin";
-
-export interface Product {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  rating: number;
-  reviews: number;
-  image: string;
-  skinTypes: SkinType[];
-  concerns: Concern[];
-  ingredients: string[];
-  benefits: string[];
-  keyBenefit: string;
-}
-
-export const skinTypeLabels: Record<SkinType, string> = {
+export const skinTypeLabels = {
   oily: "Oily",
   dry: "Dry",
   "acne-prone": "Acne-Prone",
@@ -39,7 +7,7 @@ export const skinTypeLabels: Record<SkinType, string> = {
   normal: "Normal",
 };
 
-export const concernLabels: Record<Concern, string> = {
+export const concernLabels = {
   acne: "Acne",
   "dark-spots": "Dark Spots",
   dullness: "Dullness",
@@ -49,7 +17,7 @@ export const concernLabels: Record<Concern, string> = {
   "sensitive-skin": "Sensitive Skin",
 };
 
-export const products: Product[] = [
+export const products = [
   {
     id: "p1",
     name: "Niacinamide 10% Clarifying Serum",
@@ -164,27 +132,14 @@ export const products: Product[] = [
   },
 ];
 
-export interface ScoredProduct {
-  product: Product;
-  score: number;
-  matchPercent: number;
-  reason: string;
-}
-
-export function recommendProducts(
-  skinType: SkinType,
-  concerns: Concern[],
-): ScoredProduct[] {
+export function recommendProducts(skinType, concerns) {
   return products
     .map((product) => {
       const matchesSkin = product.skinTypes.includes(skinType);
       const matchedConcerns = product.concerns.filter((c) => concerns.includes(c));
-      const score =
-        (matchesSkin ? 3 : 0) + matchedConcerns.length * 2;
-      // Max possible: 3 (skin match) + 2 * concerns selected (capped by product concerns)
+      const score = (matchesSkin ? 3 : 0) + matchedConcerns.length * 2;
       const maxPossible = 3 + Math.min(concerns.length, product.concerns.length) * 2;
       const baseMatch = maxPossible > 0 ? score / maxPossible : 0;
-      // Blend with skin match weighting so even no-concerns gives a meaningful %
       const matchPercent = Math.round(
         Math.min(100, (matchesSkin ? 60 : 20) + matchedConcerns.length * 15 + baseMatch * 10),
       );
