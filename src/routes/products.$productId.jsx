@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Star, ShoppingBag, Check, Minus, Plus, Sparkles } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { products, skinTypeLabels, type Product } from "@/data/products";
+import { products, skinTypeLabels } from "@/data/products";
 import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/products/$productId")({
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/products/$productId")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData() as { product: Product };
+  const { product } = Route.useLoaderData();
   const { addItem } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
