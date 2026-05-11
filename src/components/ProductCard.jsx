@@ -1,27 +1,20 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Star, ShoppingBag, Sparkles, Check } from "lucide-react";
-import type { ScoredProduct, Product } from "@/data/products";
 import { skinTypeLabels } from "@/data/products";
 import { useCart } from "@/lib/cart";
 
-interface Props {
-  scored?: ScoredProduct;
-  product?: Product;
-  index?: number;
-  showMatch?: boolean;
-}
-
-export function ProductCard({ scored, product: productProp, index = 0, showMatch = true }: Props) {
+export function ProductCard({ scored, product: productProp, index = 0, showMatch = true }) {
   const product = scored?.product ?? productProp;
-  if (!product) return null;
   const reason = scored?.reason;
   const matchPercent = scored?.matchPercent;
 
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
 
-  const handleAdd = (e: React.MouseEvent) => {
+  if (!product) return null;
+
+  const handleAdd = (e) => {
     e.preventDefault();
     e.stopPropagation();
     addItem(product.id, 1);

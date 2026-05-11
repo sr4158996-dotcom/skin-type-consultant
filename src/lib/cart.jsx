@@ -1,34 +1,11 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
-import { products, type Product } from "@/data/products";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { products } from "@/data/products";
 
-export interface CartItem {
-  productId: string;
-  quantity: number;
-}
-
-interface CartContextValue {
-  items: CartItem[];
-  count: number;
-  subtotal: number;
-  detailedItems: { product: Product; quantity: number; lineTotal: number }[];
-  addItem: (productId: string, qty?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, qty: number) => void;
-  clear: () => void;
-}
-
-const CartContext = createContext<CartContextValue | null>(null);
+const CartContext = createContext(null);
 const STORAGE_KEY = "lumiere_cart_v1";
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+export function CartProvider({ children }) {
+  const [items, setItems] = useState([]);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -46,7 +23,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, [items, hydrated]);
 
-  const value = useMemo<CartContextValue>(() => {
+  const value = useMemo(() => {
     const detailedItems = items
       .map((it) => {
         const product = products.find((p) => p.id === it.productId);
@@ -57,7 +34,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           lineTotal: product.price * it.quantity,
         };
       })
-      .filter(Boolean) as { product: Product; quantity: number; lineTotal: number }[];
+      .filter(Boolean);
 
     return {
       items,
